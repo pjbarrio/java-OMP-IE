@@ -1,5 +1,8 @@
 package utils.wordmodel;
 
+import java.io.IOException;
+import java.nio.channels.UnsupportedAddressTypeException;
+
 public class DataGenerationParameterUtils {
 
 	public final static String[] outprefix = {"data/omp/"};
@@ -39,10 +42,26 @@ public class DataGenerationParameterUtils {
 	}
 
 	public static String getSourceFolder(String task) {
-		if (task.equals("Toy")){
-			return "D:/Documents/NYTimesExtraction/NYTToyExtraction/";
+		
+		try {
+			if (Runtime.getRuntime().exec("hostname").equals("monster-win8")){
+			
+				if (task.equals("Toy")){
+					return "D:/Documents/NYTimesExtraction/NYTToyExtraction/";
+				}
+				return "D:/Documents/NYTimesExtraction/NYTTrainExtraction/NYT"+task+"Extraction/";
+				
+			} else{ //It's on Columbia's network
+				
+				return "/local/pjbarrio/Files/Downloads/NYT" + task + "Extraction/";
+				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return "D:/Documents/NYTimesExtraction/NYTTrainExtraction/NYT"+task+"Extraction/";
+
+		return null;
+		
 	}
 
 	public static String getFileListName(String task) {
@@ -52,6 +71,16 @@ public class DataGenerationParameterUtils {
 	public static String getAttributesFileName(String relation,
 			String extractor, String task) {
 		return task + "." + relation + "." + extractor + ".ser";
+	}
+
+	public static int getCollectionId(String task) {
+		if (task.equals("Toy")){
+			return 0;
+		}else if (task.equals("Train")){
+			return 1;
+		}else{
+			throw new UnsupportedAddressTypeException();
+		}
 	}
 
 	

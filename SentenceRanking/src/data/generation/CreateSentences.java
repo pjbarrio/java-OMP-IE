@@ -16,6 +16,7 @@ import edu.stanford.nlp.ie.machinereading.structure.Span;
 import sentence.splitter.StanfordCoreNLPSentenceSplitter;
 import utils.RDFPESExtractor;
 import utils.SerializationHelper;
+import utils.databaseWriter;
 import utils.wordmodel.DataGenerationParameterUtils;
 
 public class CreateSentences {
@@ -39,15 +40,15 @@ public class CreateSentences {
 
 		System.out.println("Saving sentences");
 
-		BufferedWriter bw = new BufferedWriter(new FileWriter(outprefix + task + SENTENCES));
-
-		boolean first = true;
-
+		databaseWriter dW = new databaseWriter();
+		
 		int currentSentence = 0;
 
 		String content;
 		
 		File[] files = (File[])SerializationHelper.deserialize(outprefix + DataGenerationParameterUtils.getFileListName(task));
+		
+		int collection = DataGenerationParameterUtils.getCollectionId(task);
 		
 		Map<String,Pair<Integer,Integer>> docSentencesMap = new HashMap<String,Pair<Integer,Integer>>();
 		
@@ -71,13 +72,7 @@ public class CreateSentences {
 				
 				String text = content.substring(sentences.get(j).start(), sentences.get(j).end());
 				
-				if (!first){
-					bw.newLine();
-				}
-
-				bw.write(currentSentence + " " + text);
-
-				first = false;
+				dW.insertSentence(collection, currentSentence, text);
 
 				currentSentence++;
 				
@@ -87,7 +82,7 @@ public class CreateSentences {
 			
 		}
 		
-		bw.close();
+		dW.closeConnection();
 
 		Integer totalNumberofSentences = currentSentence;
 		
